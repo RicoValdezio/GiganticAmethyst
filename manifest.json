@@ -1,0 +1,10 @@
+{
+    "name": "GiganticAmethyst",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/RicoValdezio/GiganticAmethyst",
+    "description": "Adds the Gigantic Amethyst, an equipment that resets ability cooldowns",
+    "dependencies": [
+        "bbepis-BepInExPack-3.2.0",
+        "tristanmcpherson-R2API-2.4.1"
+    ]
+}
