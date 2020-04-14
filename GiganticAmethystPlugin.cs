@@ -52,7 +52,7 @@ namespace GiganticAmethyst
             EquipmentDef AmethystEquipmentDef = new EquipmentDef
             {
                 name = "GiganticAmethystEquipment",
-                cooldown = 8f,
+                cooldown = 30f,
                 pickupModelPath = PrefabPath,
                 pickupIconPath = IconPath,
                 nameToken = "Gigantic Amethyst",
