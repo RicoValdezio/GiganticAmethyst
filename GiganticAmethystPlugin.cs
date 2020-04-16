@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace GiganticAmethyst
 {
-    [BepInDependency("com.bepis.r2api",  BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
     //Sushi/Engima - Use an array to request submodules
     [R2APISubmoduleDependency(new string[]
     {
@@ -17,62 +17,32 @@ namespace GiganticAmethyst
         "ResourcesAPI",
     })]
     [BepInPlugin(ModGuid, ModName, ModVer)]
-    //Sushi/Engima - Was this a wickedring mod?
-    //Sushi/Engima - You can hook the itemcatalog, check if the itemdef is the wickedring, then make your changes if you're still interested in making one. 
-    //Sushi/Engima - public class WickedRing : BaseUnityPlugin
     public class GiganticAmethyst : BaseUnityPlugin
     {
-        private const string ModVer = "1.1.0";
+        //Sushi/Enigma - Up the version
+        private const string ModVer = "1.2.0";
         private const string ModName = "GiganticAmethyst";
         private const string ModGuid = "com.RicoValdezio.GiganticAmethyst";
 
         //Sushi/Engima - Make it static so it's accessible
         public static ConfigEntry<bool> RoR1Behavior;
         public static ConfigEntry<float> Cooldown;
+
+        //Sushi/Enigma - Make an instance of the plugin so we can do stuff like GiganticAmethyst.instance.Config.Bind outside of its class.
+        public static GiganticAmethyst instance;
         private void Awake()
         {
             //Sushi/Engima - Set our values before doing anything else
             InitConfig();
+            if (GiganticAmethyst.instance == null) GiganticAmethyst.instance = this;
+
 
             GiganticAmethystEquip.Init();
-
-            //Sushi/Engima - Subscribe instead of making a whole new class. 
-            On.RoR2.EquipmentSlot.PerformEquipmentAction += EquipmentSlot_PerformEquipmentAction;
-        }
-        private bool EquipmentSlot_PerformEquipmentAction(On.RoR2.EquipmentSlot.orig_PerformEquipmentAction orig, EquipmentSlot self, EquipmentIndex equipmentIndex)
-        {
-            if (equipmentIndex == GiganticAmethystEquip.AmethystEquipmentIndex)
-            {
-                SkillLocator skillLocator = self.characterBody.skillLocator;
-                if (skillLocator)
-                {
-                    //Sushi/Engima - There's one aspect of mod development that you should know of
-                    //Sushi/Engima - Praying to god that the mod doesn't need additional networking
-                    if (RoR1Behavior.Value) skillLocator.ResetSkills();
-                    //Sushi/Engima - It's an on and off behavior, if it isn't on it's off and vice versa.
-                    else skillLocator.ApplyAmmoPack();
-                    //Sushi/Engima - Watch it completely error though!
-                }
-                return true;
-            }
-            //Sushi/Engima - Gotta do this.
-            return orig(self, equipmentIndex);
+            GiganticAmethystHook.Init();
         }
         private void InitConfig()
         {
-            //Sushi/Enigma - y'know, this reminds me of a github pull request
-            //https://github.com/space-wizards/space-station-14/pull/801
-            RoR1Behavior = Config.Bind<bool>(
-            "RoR1Behavior",
-            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
-            true
-            );
-            //Sushi/Enigma - Made a cooldown option because let's be completely honest here, no one wants to dive into the code every time they want to change a fucking int.
-            Cooldown = Config.Bind<float>(
-            "Cooldown",
-            "The cooldown of the equipment. Is a float.", 
-            8
-            );
+
         }
     }
 
@@ -110,7 +80,7 @@ namespace GiganticAmethyst
             //Sushi/Engima - I changed the lore.
             R2API.AssetPlus.Languages.AddToken("AMETHYST_LORE", "I highly suggest handling this thing with some form of protective gear; we're not sure if it has any effects on the human body.");
             EquipmentDef AmethystEquipmentDef = new EquipmentDef
-            {   
+            {
                 name = "AMETHYST_NAME",
                 //Sushi/Engima - Doubled the cooldown
                 cooldown = GiganticAmethyst.Cooldown.Value,
@@ -136,6 +106,49 @@ namespace GiganticAmethyst
             CustomEquipment AmethystEquipment = new CustomEquipment(AmethystEquipmentDef, AmethystDisplayRules);
 
             AmethystEquipmentIndex = ItemAPI.Add(AmethystEquipment);
+        }
+    }
+    internal class GiganticAmethystHook
+    {
+        internal static void Init()
+        {
+            On.RoR2.EquipmentSlot.PerformEquipmentAction += (orig, self, equipmentIndex) =>
+            {
+                if (equipmentIndex == GiganticAmethystEquip.AmethystEquipmentIndex)
+                {
+                    SkillLocator skillLocator = self.characterBody.skillLocator;
+                    if (skillLocator)
+                    {
+                        //Sushi/Engima - There's one aspect of mod development that you should know of
+                        //Sushi/Engima - Praying to god that the mod doesn't need additional networking
+                        if (GiganticAmethyst.RoR1Behavior.Value) skillLocator.ResetSkills();
+                        //Sushi/Engima - Using else because it's an on and off behavior, if it isn't on it's off and vice versa.
+                        else skillLocator.ApplyAmmoPack();
+                        //Sushi/Engima - Watch it completely error!
+                    }
+                    return true;
+                }
+                return orig(self, equipmentIndex);
+            };
+        }
+    }
+    internal class GiganticAmethystConfig
+    {
+        internal static void Init()
+        {
+            //Sushi/Enigma - y'know, this reminds me of a github pull request for SS14
+            //https://github.com/space-wizards/space-station-14/pull/801
+            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
+            "RoR1Behavior",
+            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
+            true
+            );
+            //Sushi/Enigma - Made a cooldown option because let's be completely honest here, no one wants to dive into the code every time they want to change a fucking float.
+            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
+            "Cooldown",
+            "The cooldown of the equipment. Is a float.",
+            8
+            );
         }
     }
 }
