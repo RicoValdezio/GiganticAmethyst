@@ -1,6 +1,6 @@
 {
     "name": "GiganticAmethyst",
-    "version_number": "1.0.1",
+    "version_number": "1.1.0",
     "website_url": "https://github.com/RicoValdezio/GiganticAmethyst",
     "description": "Adds the Gigantic Amethyst, an equipment that resets ability cooldowns",
     "dependencies": [
