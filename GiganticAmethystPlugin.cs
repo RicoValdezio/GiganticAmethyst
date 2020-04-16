@@ -9,33 +9,32 @@ using UnityEngine;
 namespace GiganticAmethyst
 {
     [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
-    //Sushi/Engima - Use an array to request submodules
     [R2APISubmoduleDependency(new string[]
     {
         "ItemAPI",
         "ItemDropAPI",
         "ResourcesAPI",
+        "AssetPlus",
     })]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     public class GiganticAmethyst : BaseUnityPlugin
     {
-        //Sushi/Enigma - Up the version
-        private const string ModVer = "1.2.0";
+        private const string ModVer = "1.1.0";
         private const string ModName = "GiganticAmethyst";
         private const string ModGuid = "com.RicoValdezio.GiganticAmethyst";
 
-        //Sushi/Engima - Make it static so it's accessible
         public static ConfigEntry<bool> RoR1Behavior;
         public static ConfigEntry<float> Cooldown;
 
-        //Sushi/Enigma - Make an instance of the plugin so we can do stuff like GiganticAmethyst.instance.Config.Bind outside of its class.
         public static GiganticAmethyst instance;
         private void Awake()
         {
-            //Sushi/Engima - Set an instance
-            if (GiganticAmethyst.instance == null) GiganticAmethyst.instance = this;
 
-            //Set config values before anything else.
+            if (GiganticAmethyst.instance == null)
+            { 
+                GiganticAmethyst.instance = this; 
+            }
+
             GiganticAmethystConfig.Init();
             GiganticAmethystEquip.Init();
             GiganticAmethystHook.Init();
@@ -45,14 +44,11 @@ namespace GiganticAmethyst
     {
         internal static void Init()
         {
-            //Sushi/Enigma - y'know, this reminds me of a github pull request for SS14
-            //https://github.com/space-wizards/space-station-14/pull/801
             GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
             "RoR1Behavior",
             "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
             true
             );
-            //Sushi/Enigma - Made a cooldown option because let's be completely honest here, no one wants to dive into the code every time they want to change a fucking float.
             GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
             "Cooldown",
             "The cooldown of the equipment. Is a float.",
@@ -86,35 +82,25 @@ namespace GiganticAmethyst
 
         private static void AmethystAsEquip()
         {
-            //Sushi/Engima - Do our token stuff here.
-            R2API.AssetPlus.Languages.AddToken("AMETHYST_NAME", "Gigantic Amethyst");
-            R2API.AssetPlus.Languages.AddToken("AMETHYST_PICKUP", "<style=cIsUtility>Reset</style> all your cooldowns.");
-            R2API.AssetPlus.Languages.AddToken("AMETHYST_DESCRIPTION", "<style=cIsUtility>Reset</style> all your cooldowns on activation.");
-            //Sushi/Engima - I changed the lore.
-            R2API.AssetPlus.Languages.AddToken("AMETHYST_LORE", "I highly suggest handling this thing with some form of protective gear; we're not sure if it has any effects on the human body.");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_NAME_TOKEN", "Gigantic Amethyst");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_PICKUP_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns.");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_DESCRIPTION_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns on activation.");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_LORE_TOKEN", "I highly suggest handling this thing with some form of protective gear; we're not sure if it has any effects on the human body.");
             EquipmentDef AmethystEquipmentDef = new EquipmentDef
             {
-                name = "AMETHYST_NAME",
-                //Sushi/Engima - Set the cooldown to config value
+                name = "AMETHYST_NAME_TOKEN",
                 cooldown = GiganticAmethyst.Cooldown.Value,
                 pickupModelPath = PrefabPath,
                 pickupIconPath = IconPath,
-                //Sushi/Engima - Changed these fields so they correctly used tokens
-                nameToken = "AMETHYST_NAME",
-                pickupToken = "AMETHYST_PICKUP",
-                descriptionToken = "AMETHYST_DESCRIPTION",
-                loreToken = "AMETHYST_LORE",
+                nameToken = "AMETHYST_NAME_TOKEN",
+                pickupToken = "AMETHYST_PICKUP_TOKEN",
+                descriptionToken = "AMETHYST_DESCRIPTION_TOKEN",
+                loreToken = "AMETHYST_LORE_TOKEN",
                 canDrop = true,
                 enigmaCompatible = true
             };
 
-            //Sushi/Engima - idk what this is lol
-            ItemDisplayRule[] AmethystDisplayRules = new ItemDisplayRule[1];
-            AmethystDisplayRules[0].followerPrefab = AmethystPrefab;
-            AmethystDisplayRules[0].childName = "Chest";
-            AmethystDisplayRules[0].localScale = new Vector3(10f, 10f, 10f);
-            AmethystDisplayRules[0].localAngles = new Vector3(0f, 0f, 0f);
-            AmethystDisplayRules[0].localPos = new Vector3(0f, 0f, 0f);
+            ItemDisplayRule[] AmethystDisplayRules = null;
 
             CustomEquipment AmethystEquipment = new CustomEquipment(AmethystEquipmentDef, AmethystDisplayRules);
 
@@ -132,10 +118,14 @@ namespace GiganticAmethyst
                     SkillLocator skillLocator = self.characterBody.skillLocator;
                     if (skillLocator)
                     {
-                        if (GiganticAmethyst.RoR1Behavior.Value) skillLocator.ResetSkills();
-                        //Sushi/Engima - Using else because it's an on and off behavior, if it isn't on it's off and vice versa.
-                        else skillLocator.ApplyAmmoPack();
-                        //Sushi/Engima - Watch it completely error!
+                        if (GiganticAmethyst.RoR1Behavior.Value)
+                        {
+                            skillLocator.ResetSkills();
+                        }
+                        else
+                        {
+                            skillLocator.ApplyAmmoPack();
+                        }
                     }
                     return true;
                 }
