@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using R2API;
 using R2API.Utils;
 using RoR2;
@@ -7,22 +8,54 @@ using UnityEngine;
 
 namespace GiganticAmethyst
 {
-    [BepInDependency("com.bepis.r2api")]
-    [R2APISubmoduleDependency(nameof(ItemAPI), nameof(ItemDropAPI), nameof(ResourcesAPI))]
-    [BepInPlugin(ModGuid, ModName, ModVer)]
-    public class WickedRing : BaseUnityPlugin
+    [BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+    [R2APISubmoduleDependency(new string[]
     {
-        private const string ModVer = "1.0.0";
+        "ItemAPI",
+        "ItemDropAPI",
+        "ResourcesAPI",
+        "AssetPlus",
+    })]
+    [BepInPlugin(ModGuid, ModName, ModVer)]
+    public class GiganticAmethyst : BaseUnityPlugin
+    {
+        private const string ModVer = "1.1.0";
         private const string ModName = "GiganticAmethyst";
         private const string ModGuid = "com.RicoValdezio.GiganticAmethyst";
 
+        public static ConfigEntry<bool> RoR1Behavior;
+        public static ConfigEntry<float> Cooldown;
+
+        public static GiganticAmethyst instance;
         private void Awake()
         {
+
+            if (GiganticAmethyst.instance == null)
+            { 
+                GiganticAmethyst.instance = this; 
+            }
+
+            GiganticAmethystConfig.Init();
             GiganticAmethystEquip.Init();
             GiganticAmethystHook.Init();
         }
     }
-
+    internal class GiganticAmethystConfig
+    {
+        internal static void Init()
+        {
+            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
+            "RoR1Behavior",
+            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
+            true
+            );
+            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
+            "Cooldown",
+            "The cooldown of the equipment. Is a float.",
+            8
+            );
+        }
+    }
     internal class GiganticAmethystEquip
     {
         internal static GameObject AmethystPrefab;
@@ -49,33 +82,31 @@ namespace GiganticAmethyst
 
         private static void AmethystAsEquip()
         {
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_NAME_TOKEN", "Gigantic Amethyst");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_PICKUP_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns.");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_DESCRIPTION_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns on activation.");
+            R2API.AssetPlus.Languages.AddToken("AMETHYST_LORE_TOKEN", "I highly suggest handling this thing with some form of protective gear; we're not sure if it has any effects on the human body.");
             EquipmentDef AmethystEquipmentDef = new EquipmentDef
             {
-                name = "GiganticAmethystEquipment",
-                cooldown = 30f,
+                name = "AMETHYST_NAME_TOKEN",
+                cooldown = GiganticAmethyst.Cooldown.Value,
                 pickupModelPath = PrefabPath,
                 pickupIconPath = IconPath,
-                nameToken = "Gigantic Amethyst",
-                pickupToken = "<style=cIsUtility>Reset</style> all your cooldowns.",
-                descriptionToken = "<style=cIsUtility>Reset</style> all your cooldowns.",
-                loreToken = "Used for focus lasers, so they say.",
+                nameToken = "AMETHYST_NAME_TOKEN",
+                pickupToken = "AMETHYST_PICKUP_TOKEN",
+                descriptionToken = "AMETHYST_DESCRIPTION_TOKEN",
+                loreToken = "AMETHYST_LORE_TOKEN",
                 canDrop = true,
                 enigmaCompatible = true
             };
-            
-            ItemDisplayRule[] AmethystDisplayRules = new ItemDisplayRule[1];
-            AmethystDisplayRules[0].followerPrefab = AmethystPrefab;
-            AmethystDisplayRules[0].childName = "Chest";
-            AmethystDisplayRules[0].localScale = new Vector3(10f, 10f, 10f);
-            AmethystDisplayRules[0].localAngles = new Vector3(0f, 0f, 0f);
-            AmethystDisplayRules[0].localPos = new Vector3(0f, 0f, 0f);
+
+            ItemDisplayRule[] AmethystDisplayRules = null;
 
             CustomEquipment AmethystEquipment = new CustomEquipment(AmethystEquipmentDef, AmethystDisplayRules);
 
             AmethystEquipmentIndex = ItemAPI.Add(AmethystEquipment);
         }
     }
-
     internal class GiganticAmethystHook
     {
         internal static void Init()
@@ -84,26 +115,20 @@ namespace GiganticAmethyst
             {
                 if (equipmentIndex == GiganticAmethystEquip.AmethystEquipmentIndex)
                 {
-                    SkillLocator Skills = self.characterBody.skillLocator;
-                    if (Skills.primary)
+                    SkillLocator skillLocator = self.characterBody.skillLocator;
+                    if (skillLocator)
                     {
-                        Skills.primary.Reset();
-                    }
-                    if (Skills.secondary)
-                    {
-                        Skills.secondary.Reset();
-                    }
-                    if (Skills.utility)
-                    {
-                        Skills.utility.Reset();
-                    }
-                    if (Skills.special)
-                    {
-                        Skills.special.Reset();
+                        if (GiganticAmethyst.RoR1Behavior.Value)
+                        {
+                            skillLocator.ResetSkills();
+                        }
+                        else
+                        {
+                            skillLocator.ApplyAmmoPack();
+                        }
                     }
                     return true;
                 }
-
                 return orig(self, equipmentIndex);
             };
         }
