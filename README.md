@@ -2,10 +2,10 @@
 The Gigantic Amethyst is an equipment item from the original Risk of Rain that reset all ability cooldowns.
 Since Risk of Rain 2 allows certain abilities to have stacks this will reset all abilities to full stock.
 May not work with custom characters, depends on load order.
-For those of you who are looking for a longer cooldown, consider using versions flagged with !Long.
 
 Changelog
 ------------
+1.1.0 - Configuration added by Sushi
 1.0.1 - !Long - Increased Equipment Cooldown to 30s
 1.0.0 - Initial Upload
 

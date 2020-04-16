@@ -56,7 +56,7 @@ namespace GiganticAmethyst
             );
         }
     }
-   internal class GiganticAmethystEquip
+    internal class GiganticAmethystEquip
     {
         internal static GameObject AmethystPrefab;
         internal static EquipmentIndex AmethystEquipmentIndex;
