@@ -32,28 +32,41 @@ namespace GiganticAmethyst
         public static GiganticAmethyst instance;
         private void Awake()
         {
-            //Sushi/Engima - Set our values before doing anything else
-            InitConfig();
+            //Sushi/Engima - Set an instance
             if (GiganticAmethyst.instance == null) GiganticAmethyst.instance = this;
 
-
+            //Set config values before anything else.
+            GiganticAmethystConfig.Init();
             GiganticAmethystEquip.Init();
             GiganticAmethystHook.Init();
         }
-        private void InitConfig()
+    }
+    internal class GiganticAmethystConfig
+    {
+        internal static void Init()
         {
-
+            //Sushi/Enigma - y'know, this reminds me of a github pull request for SS14
+            //https://github.com/space-wizards/space-station-14/pull/801
+            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
+            "RoR1Behavior",
+            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
+            true
+            );
+            //Sushi/Enigma - Made a cooldown option because let's be completely honest here, no one wants to dive into the code every time they want to change a fucking float.
+            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
+            "Cooldown",
+            "The cooldown of the equipment. Is a float.",
+            8
+            );
         }
     }
-
-    internal class GiganticAmethystEquip
+   internal class GiganticAmethystEquip
     {
         internal static GameObject AmethystPrefab;
         internal static EquipmentIndex AmethystEquipmentIndex;
         internal static AssetBundleResourcesProvider AmethystProvider;
         internal static AssetBundle AmethystBundle;
 
-        //Sushi/Engima - I haven't done assetbundle stuff at all.
         private const string ModPrefix = "@GiganticAmethyst:";
         private const string PrefabPath = ModPrefix + "Assets/Amethyst.prefab";
         private const string IconPath = ModPrefix + "Assets/Amethyst_Icon.png";
@@ -82,7 +95,7 @@ namespace GiganticAmethyst
             EquipmentDef AmethystEquipmentDef = new EquipmentDef
             {
                 name = "AMETHYST_NAME",
-                //Sushi/Engima - Doubled the cooldown
+                //Sushi/Engima - Set the cooldown to config value
                 cooldown = GiganticAmethyst.Cooldown.Value,
                 pickupModelPath = PrefabPath,
                 pickupIconPath = IconPath,
@@ -119,8 +132,6 @@ namespace GiganticAmethyst
                     SkillLocator skillLocator = self.characterBody.skillLocator;
                     if (skillLocator)
                     {
-                        //Sushi/Engima - There's one aspect of mod development that you should know of
-                        //Sushi/Engima - Praying to god that the mod doesn't need additional networking
                         if (GiganticAmethyst.RoR1Behavior.Value) skillLocator.ResetSkills();
                         //Sushi/Engima - Using else because it's an on and off behavior, if it isn't on it's off and vice versa.
                         else skillLocator.ApplyAmmoPack();
@@ -130,25 +141,6 @@ namespace GiganticAmethyst
                 }
                 return orig(self, equipmentIndex);
             };
-        }
-    }
-    internal class GiganticAmethystConfig
-    {
-        internal static void Init()
-        {
-            //Sushi/Enigma - y'know, this reminds me of a github pull request for SS14
-            //https://github.com/space-wizards/space-station-14/pull/801
-            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
-            "RoR1Behavior",
-            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
-            true
-            );
-            //Sushi/Enigma - Made a cooldown option because let's be completely honest here, no one wants to dive into the code every time they want to change a fucking float.
-            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
-            "Cooldown",
-            "The cooldown of the equipment. Is a float.",
-            8
-            );
         }
     }
 }
