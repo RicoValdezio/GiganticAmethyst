@@ -31,8 +31,8 @@ namespace GiganticAmethyst
         {
 
             if (GiganticAmethyst.instance == null)
-            { 
-                GiganticAmethyst.instance = this; 
+            {
+                GiganticAmethyst.instance = this;
             }
 
             GiganticAmethystConfig.Init();
@@ -44,16 +44,8 @@ namespace GiganticAmethyst
     {
         internal static void Init()
         {
-            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>(
-            "RoR1Behavior",
-            "Uses the RoR1 behavior. Turn this off to use an alternate behavior.",
-            true
-            );
-            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>(
-            "Cooldown",
-            "The cooldown of the equipment. Is a float.",
-            8
-            );
+            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>("MainSettings", "RoR1 Behavior", true, "Determines if equipment matches the RoR1 behavior and fully restocks the skills, or if it only refills a single stock.");
+            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>("MainSettings", "Cooldown", 8, "Length of the cooldown in seconds.");
         }
     }
     internal class GiganticAmethystEquip
