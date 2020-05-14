@@ -5,6 +5,7 @@ May not work with custom characters, depends on load order.
 
 Changelog
 ------------
+1.2.0 - Equipment now displays on character
 1.1.1 - Updated config to show descriptions
 1.1.0 - Configuration added by SushiDev
 1.0.1 - !Long - Increased Equipment Cooldown to 30s
