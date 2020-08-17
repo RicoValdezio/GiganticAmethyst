@@ -8,19 +8,13 @@ namespace GiganticAmethyst
         {
             On.RoR2.EquipmentSlot.PerformEquipmentAction += (orig, self, equipmentIndex) =>
             {
-                if (equipmentIndex == GiganticAmethystEquip.AmethystEquipmentIndex)
+                if (equipmentIndex == GiganticAmethystEquip.index)
                 {
                     SkillLocator skillLocator = self.characterBody.skillLocator;
                     if (skillLocator)
                     {
-                        if (GiganticAmethyst.RoR1Behavior.Value)
-                        {
-                            skillLocator.ResetSkills();
-                        }
-                        else
-                        {
-                            skillLocator.ApplyAmmoPack();
-                        }
+                        if (GiganticAmethystConfig.fullReset) skillLocator.ResetSkills();
+                        else skillLocator.ApplyAmmoPack();
                     }
                     return true;
                 }

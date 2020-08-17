@@ -1,5 +1,6 @@
 ﻿using R2API;
 using RoR2;
+using System;
 using System.Reflection;
 using UnityEngine;
 
@@ -7,54 +8,63 @@ namespace GiganticAmethyst
 {
     class GiganticAmethystEquip
     {
-        internal static GameObject AmethystPrefab;
-        internal static EquipmentIndex AmethystEquipmentIndex;
-        internal static AssetBundleResourcesProvider AmethystProvider;
-        internal static AssetBundle AmethystBundle;
-
-        private const string ModPrefix = "@GiganticAmethyst:";
-        private const string PrefabPath = ModPrefix + "Assets/Amethyst.prefab";
-        private const string IconPath = ModPrefix + "Assets/Amethyst_Icon.png";
+        internal static EquipmentIndex index;
 
         internal static void Init()
         {
-            using (System.IO.Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GiganticAmethyst.amethyst"))
-            {
-                AmethystBundle = AssetBundle.LoadFromStream(stream);
-                AmethystProvider = new AssetBundleResourcesProvider(ModPrefix.Trim(':'), AmethystBundle);
-                ResourcesAPI.AddProvider(AmethystProvider);
-                AmethystPrefab = AmethystBundle.LoadAsset<GameObject>("Assets/Amethyst.prefab");
-            };
-
-            AmethystAsEquip();
+            AddProvider();
+            AddTokens();
+            AddEquipment();
         }
 
-        private static void AmethystAsEquip()
+        private static void AddProvider()
+        {
+            using (System.IO.Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GiganticAmethyst.amethyst"))
+            {
+                AssetBundle bundle = AssetBundle.LoadFromStream(stream);
+                AssetBundleResourcesProvider provider = new AssetBundleResourcesProvider("@Amethyst", bundle);
+                ResourcesAPI.AddProvider(provider);
+            };
+        }
+
+        private static void AddTokens()
         {
             LanguageAPI.Add("AMETHYST_NAME_TOKEN", "Gigantic Amethyst");
-            LanguageAPI.Add("AMETHYST_PICKUP_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns.");
-            LanguageAPI.Add("AMETHYST_DESCRIPTION_TOKEN", "<style=cIsUtility>Reset</style> all your cooldowns on activation.");
-            LanguageAPI.Add("AMETHYST_LORE_TOKEN", "I highly suggest handling this thing with some form of protective gear; we're not sure if it has any effects on the human body.");
-            EquipmentDef AmethystEquipmentDef = new EquipmentDef
+            LanguageAPI.Add("AMETHYST_PICK_TOKEN", "<style=cIsUtility>Reset</style> all ability cooldowns.");
+            LanguageAPI.Add("AMETHYST_DESC_TOKEN", "<style=cIsUtility>Reset</style> all ability cooldowns on activation.");
+            string longLore = "Order: One Gigantic Amethyst" + Environment.NewLine +
+                              "Tracking Number: 09******" + Environment.NewLine +
+                              "Estimated Delivery: June 26, 2396" + Environment.NewLine +
+                              "Shipping Method: Fragile" + Environment.NewLine +
+                              "Shipping Address: 69 Main St, Atherton QLD 4883, Australia" + Environment.NewLine +
+                              "Shipping Notes:" + Environment.NewLine + Environment.NewLine +
+                              "This is the last known fragment of the infamous Empress of Uruguay that your old man used to own back in the day. There really must be something up with your family and crystals for you to want this back after the collapse." + Environment.NewLine + Environment.NewLine +
+                              "Anyways, handle this thing with care. I have no idea how far it's travelled to get in my hands, and I guarantee that it won't be a short trip home to you.";
+            LanguageAPI.Add("AMETHYST_LORE_TOKEN", longLore);
+        }
+
+        private static void AddEquipment()
+        {
+            EquipmentDef def = new EquipmentDef
             {
                 name = "AMETHYST_NAME_TOKEN",
-                cooldown = GiganticAmethyst.Cooldown.Value,
-                pickupModelPath = PrefabPath,
-                pickupIconPath = IconPath,
+                cooldown = GiganticAmethystConfig.cooldown,
+                pickupModelPath = "@Amethyst/Amethyst.prefab",
+                pickupIconPath = "@Amethyst/Amethyst_Icon.png",
                 nameToken = "AMETHYST_NAME_TOKEN",
-                pickupToken = "AMETHYST_PICKUP_TOKEN",
-                descriptionToken = "AMETHYST_DESCRIPTION_TOKEN",
+                pickupToken = "AMETHYST_PICK_TOKEN",
+                descriptionToken = "AMETHYST_DESC_TOKEN",
                 loreToken = "AMETHYST_LORE_TOKEN",
                 canDrop = true,
                 enigmaCompatible = true
             };
 
-            ItemDisplayRule[] AmethystDisplayRules = new ItemDisplayRule[1];
+            GameObject followerPrefab = Resources.Load<GameObject>("@Amethyst/Amethyst.prefab");
 
+            ItemDisplayRuleDict rules = new ItemDisplayRuleDict();
 
-            CustomEquipment AmethystEquipment = new CustomEquipment(AmethystEquipmentDef, AmethystDisplayRules);
-
-            AmethystEquipmentIndex = ItemAPI.Add(AmethystEquipment);
+            CustomEquipment equip = new CustomEquipment(def, rules);
+            index = ItemAPI.Add(equip);
         }
     }
 }

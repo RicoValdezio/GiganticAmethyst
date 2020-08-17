@@ -2,10 +2,12 @@
 {
     class GiganticAmethystConfig
     {
+        internal static bool fullReset;
+        internal static float cooldown;
         internal static void Init()
         {
-            GiganticAmethyst.RoR1Behavior = GiganticAmethyst.instance.Config.Bind<bool>("MainSettings", "RoR1 Behavior", true, "Determines if equipment matches the RoR1 behavior and fully restocks the skills, or if it only refills a single stock.");
-            GiganticAmethyst.Cooldown = GiganticAmethyst.instance.Config.Bind<float>("MainSettings", "Cooldown", 8, "Length of the cooldown in seconds.");
+            fullReset = GiganticAmethyst.instance.Config.Bind("MainSettings", "Full Skill Reset", true, "Determines if usage refills all stocks (true), or only a single stock (false).").Value;
+            cooldown = GiganticAmethyst.instance.Config.Bind<float>("MainSettings", "Cooldown", 8, "Length of the cooldown in seconds.").Value;
         }
     }
 }
