@@ -38,7 +38,7 @@ namespace GiganticAmethyst
                               "Shipping Method: Fragile" + Environment.NewLine +
                               "Shipping Address: 69 Main St, Atherton QLD 4883, Australia" + Environment.NewLine +
                               "Shipping Notes:" + Environment.NewLine + Environment.NewLine +
-                              "This is the last known fragment of the infamous Empress of Uruguay that your old man used to own back in the day. There really must be something up with your family and crystals for you to want this back after the collapse." + Environment.NewLine + Environment.NewLine +
+                              "This is the last known fragment of the infamous Empress of Uruguay that your old man used to own. There really must be something up with your family and crystals for you to want this back after the collapse." + Environment.NewLine + Environment.NewLine +
                               "Anyways, handle this thing with care. I have no idea how far it's travelled to get in my hands, and I guarantee that it won't be a short trip home to you.";
             LanguageAPI.Add("AMETHYST_LORE_TOKEN", longLore);
         }
@@ -49,8 +49,8 @@ namespace GiganticAmethyst
             {
                 name = "AMETHYST_NAME_TOKEN",
                 cooldown = GiganticAmethystConfig.cooldown,
-                pickupModelPath = "@Amethyst/Amethyst.prefab",
-                pickupIconPath = "@Amethyst/Amethyst_Icon.png",
+                pickupModelPath = "@Amethyst:Assets/Amethyst.prefab",
+                pickupIconPath = "@Amethyst:Assets/Amethyst_Icon.png",
                 nameToken = "AMETHYST_NAME_TOKEN",
                 pickupToken = "AMETHYST_PICK_TOKEN",
                 descriptionToken = "AMETHYST_DESC_TOKEN",
@@ -59,9 +59,44 @@ namespace GiganticAmethyst
                 enigmaCompatible = true
             };
 
-            GameObject followerPrefab = Resources.Load<GameObject>("@Amethyst/Amethyst.prefab");
+            GameObject followerPrefab = Resources.Load<GameObject>("@Amethyst:Assets/Amethyst.prefab");
 
-            ItemDisplayRuleDict rules = new ItemDisplayRuleDict();
+            ItemDisplayRuleDict rules = new ItemDisplayRuleDict(new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, 0.25f, 0f),
+                    localAngles = new Vector3(-55f, 0f, 0f),
+                    localScale = new Vector3(0.2f, 0.2f, 0.2f)
+                }
+            });
+            rules.Add("mdlHuntress", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, 0.2f, 0f),
+                    localAngles = new Vector3(-55f, 0f, 0f),
+                    localScale = new Vector3(0.15f, 0.15f, 0.15f)
+                }
+            });
+            rules.Add("mdlToolbot", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, -0.5f, 2.5f),
+                    localAngles = new Vector3(-65f, 0f, 0f),
+                    localScale = new Vector3(1f, 1f, 1f)
+                }
+            });
 
             CustomEquipment equip = new CustomEquipment(def, rules);
             index = ItemAPI.Add(equip);
