@@ -5,6 +5,6 @@
     "description": "Adds the Gigantic Amethyst, an equipment that resets ability cooldowns",
     "dependencies": [
         "bbepis-BepInExPack-5.3.1",
-        "tristanmcpherson-R2API-2.5.6"
+        "tristanmcpherson-R2API-2.5.7"
     ]
 }

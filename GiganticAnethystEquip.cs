@@ -121,6 +121,66 @@ namespace GiganticAmethyst
                     localScale = new Vector3(0.12f, 0.12f, 0.12f)
                 }
             });
+            rules.Add("mdlMerc", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Chest",
+                    localPos = new Vector3(0f, 0.1f, 0f),
+                    localAngles = new Vector3(-72f, 0f, 0f),
+                    localScale = new Vector3(0.2f, 0.2f, 0.2f)
+                }
+            });
+            rules.Add("mdlTreebot", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "FlowerBase",
+                    localPos = new Vector3(0f, 0f, 0f),
+                    localAngles = new Vector3(0f, 0f, 0f),
+                    localScale = new Vector3(1f, 1f, 1f)
+                }
+            });
+            rules.Add("mdlLoader", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, 0.1f, 0f),
+                    localAngles = new Vector3(-55f, 0f, 0f),
+                    localScale = new Vector3(0.18f, 0.18f, 0.18f)
+                }
+            });
+            rules.Add("mdlCroco", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, -1f, 2.5f),
+                    localAngles = new Vector3(-55f, 0f, 0f),
+                    localScale = new Vector3(2f, 2f, 2f)
+                }
+            });
+            rules.Add("mldCaptain", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, 0f, 0f),
+                    localAngles = new Vector3(-45f, 0f, 0f),
+                    localScale = new Vector3(0.2f, 0.2f, 0.2f)
+                }
+            });
 
             CustomEquipment equip = new CustomEquipment(def, rules);
             index = ItemAPI.Add(equip);

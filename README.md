@@ -12,7 +12,7 @@ Changelog
 
 Installation
 ---
-Place the .dll in Risk of Rain 2\BepInEx\plugins
+Place the .dll in Risk of Rain 2\BepInEx\plugins or use r2modman.
 
 Contact
 ---
