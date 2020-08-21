@@ -97,6 +97,30 @@ namespace GiganticAmethyst
                     localScale = new Vector3(1f, 1f, 1f)
                 }
             });
+            rules.Add("mdlEngi", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Chest", //Why doesn't Engi have a Head?
+                    localPos = new Vector3(0f, 0.65f, 0f),
+                    localAngles = new Vector3(-45f, 0f, 0f),
+                    localScale = new Vector3(0.2f, 0.2f, 0.2f)
+                }
+            });
+            rules.Add("mdlMage", new ItemDisplayRule[]
+            {
+                new ItemDisplayRule
+                {
+                    ruleType = ItemDisplayRuleType.ParentedPrefab,
+                    followerPrefab = followerPrefab,
+                    childName = "Head",
+                    localPos = new Vector3(0f, 0.07f, -0.05f),
+                    localAngles = new Vector3(-60f, 0f, 0f),
+                    localScale = new Vector3(0.12f, 0.12f, 0.12f)
+                }
+            });
 
             CustomEquipment equip = new CustomEquipment(def, rules);
             index = ItemAPI.Add(equip);
